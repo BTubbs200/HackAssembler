@@ -7,13 +7,17 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
 int main(int argc, char* argv[])
 {
+	Destinations destTbl;
+	Computations compTbl;
 	string inFileName, outFileName, inStr;
-	vector<string> instructions;
+	string comp, dest, jump, prefix;
+	vector<string> instructions, binaryInstructions;
 	map<string, int> labels;
 	map<string, int>::iterator itLabels;
 	int lineCount = 0;
@@ -31,9 +35,16 @@ int main(int argc, char* argv[])
 
 	ifstream inFile(inFileName); //open input file
 
+
+	//////////// PASS 1 ////////////
+	/// Clean up human input into acceptable Assembly instructions ///
+
 	//iterate through & display all items in input file
 	while (getline(inFile, inStr, '\n'))
 	{
+		boost::erase_all(inStr, " ");
+		boost::to_upper(inStr);
+
 		int commentLoc = inStr.find("//");
 
 		//delete comments
@@ -70,6 +81,47 @@ int main(int argc, char* argv[])
 		{
 			instructions.push_back(inStr);
 			lineCount++;
+		}
+	}
+
+	//////////// PASS 2 ////////////
+	/// Process C and A instructions into binary ///
+
+	for (string inst : instructions)
+	{
+		if (inst.substr(0, 1) != "@")
+		{
+			// C instruction
+			// D=M
+			// D=M;jgt
+			// D;jgt
+
+			int eqLoc = inst.find("=");
+			int scLoc = inst.find(";");
+
+			// found = but not ;
+			if (eqLoc != string::npos && scLoc == string::npos)
+			{
+				dest = inst.substr(0, eqLoc);
+				comp = inst.substr(eqLoc + 1, inst.length() - eqLoc);
+				jump = "000";
+			}
+
+			// if M, set bit 12 for mem instruction
+			if (comp.find("M") != string::npos)
+			{
+				prefix = "1001";
+			}
+			else
+			{
+				prefix = "1000";
+			}
+
+			binaryInstructions.push_back(prefix + compTbl.find(comp) + destTbl.find(dest) + jump);
+		}
+		else
+		{
+			// A instruction
 		}
 	}
 }
