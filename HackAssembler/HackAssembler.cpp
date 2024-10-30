@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 {
 	Destinations destTbl;
 	Computations compTbl;
+	Jumps jmpTbl;
 	string inFileName, outFileName, inStr;
 	string comp, dest, jump, prefix;
 	vector<string> instructions, binaryInstructions;
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
 
 
 	//////////// PASS 1 ////////////
-	/// Clean up human input into acceptable Assembly instructions ///
+	/// Clean up human input into acceptable Assembly instruction ///
 
 	//iterate through & display all items in input file
 	while (getline(inFile, inStr, '\n'))
@@ -85,26 +86,38 @@ int main(int argc, char* argv[])
 	}
 
 	//////////// PASS 2 ////////////
-	/// Process C and A instructions into binary ///
+	/// Process C and A instruction into binary ///
 
 	for (string inst : instructions)
 	{
+		// C instruction
 		if (inst.substr(0, 1) != "@")
 		{
-			// C instruction
-			// D=M
-			// D=M;jgt
-			// D;jgt
-
 			int eqLoc = inst.find("=");
 			int scLoc = inst.find(";");
 
-			// found = but not ;
+			// found = but not ; ('D=M' format)
 			if (eqLoc != string::npos && scLoc == string::npos)
 			{
 				dest = inst.substr(0, eqLoc);
 				comp = inst.substr(eqLoc + 1, inst.length() - eqLoc);
-				jump = "000";
+				jump = "null";
+			}
+
+			// found = and ; ('D=M;jgt' format)
+			if (eqLoc != string::npos && scLoc != string::npos)
+			{
+				dest = inst.substr(0, eqLoc);
+				comp = inst.substr(eqLoc + 1, scLoc - (eqLoc + 1));
+				jump = inst.substr(scLoc + 1, inst.length() - (scLoc + 1));
+			}
+
+			//found ; but not = ('D;jgt' format)
+			if (eqLoc == string::npos && scLoc != string::npos)
+			{
+				dest = "null";
+				comp = inst.substr(0, scLoc);
+				jump = inst.substr(scLoc + 1, inst.length() - (scLoc + 1));
 			}
 
 			// if M, set bit 12 for mem instruction
@@ -117,11 +130,18 @@ int main(int argc, char* argv[])
 				prefix = "1000";
 			}
 
-			binaryInstructions.push_back(prefix + compTbl.find(comp) + destTbl.find(dest) + jump);
+			binaryInstructions.push_back(prefix + compTbl.find(comp) + destTbl.find(dest) + jmpTbl.find(jump));
 		}
+		// A instruction
 		else
 		{
-			// A instruction
+			
 		}
+	}
+
+	//test
+	for (string inst : binaryInstructions)
+	{
+		cout << inst << endl;
 	}
 }
