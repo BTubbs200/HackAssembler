@@ -21,7 +21,9 @@ int main(int argc, char* argv[])
 	vector<string> instructions, binaryInstructions;
 	map<string, int> labels;
 	map<string, int>::iterator itLabels;
-	int lineCount = 0;
+	map<string, int> symbols;
+	map<string, int>::iterator itSymbols;
+	int lineCount = 0, memoryAddr = 100;
 	
 	if (argc < 2) //user provided one or no file names
 	{
@@ -135,7 +137,51 @@ int main(int argc, char* argv[])
 		// A instruction
 		else
 		{
-			
+			//@Loop (loop target)
+			//@X (variable)
+
+			string addrInst = inst.substr(1, inst.length() - 1);
+			char symb[16] = { 0 };
+
+			itLabels = labels.find(addrInst);
+			itSymbols = symbols.find(addrInst);
+
+			//if address exists in neither
+			if (itLabels == labels.end() && itSymbols == symbols.end())	
+			{
+				symbols.insert(pair<string, int>(addrInst, memoryAddr));
+
+				_itoa_s(memoryAddr, symb, 2); //int to bin
+				string str(symb);
+				string binStr = string(16 - str.length(), '0') + str;
+
+				//add binary representation of addr to binary instructions table
+				binaryInstructions.push_back(binStr);
+
+				memoryAddr++;
+			}
+			//if address exists only in the lables table
+			else if (itLabels != labels.end() && itSymbols == symbols.end())	
+			{
+
+			}
+			//if address exists only in symbols table
+			else if (itLabels == labels.end() && itSymbols != symbols.end())
+			{
+				int addr = itSymbols->second;
+
+				_itoa_s(addr, symb, 2); //int to bin
+				string str(symb);	
+				string binStr = string(16 - str.length(), '0') + str;	
+
+				//add binary representation of addr to binary instructions table
+				binaryInstructions.push_back(binStr);
+			}
+			//if address exists in both tables, throw error
+			else	
+			{
+
+			}
 		}
 	}
 
