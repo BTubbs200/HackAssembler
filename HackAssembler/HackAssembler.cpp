@@ -11,18 +11,21 @@
 
 using namespace std;
 
+void convertToBinary(int value);
+vector<string> instructions, binaryInstructions;
+map<string, int> labels;
+map<string, int>::iterator itLabels;
+map<string, int> symbols;
+map<string, int>::iterator itSymbols;
+
 int main(int argc, char* argv[])
 {
 	Destinations destTbl;
 	Computations compTbl;
+	Bin2Hex b2hTbl;
 	Jumps jmpTbl;
 	string inFileName, outFileName, inStr;
 	string comp, dest, jump, prefix;
-	vector<string> instructions, binaryInstructions;
-	map<string, int> labels;
-	map<string, int>::iterator itLabels;
-	map<string, int> symbols;
-	map<string, int>::iterator itSymbols;
 	int lineCount = 0, memoryAddr = 100;
 	
 	if (argc < 2) //user provided one or no file names
@@ -37,10 +40,22 @@ int main(int argc, char* argv[])
 	}
 
 	ifstream inFile(inFileName); //open input file
+	ofstream outFile(outFileName);	//open output file
 
+	if (!inFile)
+	{
+		cerr << "Error: Input file '" << inFileName << "' not found.";
+		return 1;
+	}
 
-	//////////// PASS 1 ////////////
-	/// Clean up human input into acceptable Assembly instruction ///
+	if (!outFile)
+	{
+		cerr << "Error: Output file '" << outFileName << "' not found.";
+		return 1;
+	}
+
+#pragma region Pass1
+/// Clean up human input into acceptable Assembly instruction ///
 
 	//iterate through & display all items in input file
 	while (getline(inFile, inStr, '\n'))
@@ -87,8 +102,10 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	//////////// PASS 2 ////////////
-	/// Process C and A instruction into binary ///
+#pragma endregion Pass1
+
+#pragma region Pass2
+/// Process C and A instruction into binary ///
 
 	for (string inst : instructions)
 	{
@@ -141,7 +158,6 @@ int main(int argc, char* argv[])
 			//@X (variable)
 
 			string addrInst = inst.substr(1, inst.length() - 1);
-			char symb[16] = { 0 };
 
 			itLabels = labels.find(addrInst);
 			itSymbols = symbols.find(addrInst);
@@ -149,33 +165,29 @@ int main(int argc, char* argv[])
 			//if address exists in neither
 			if (itLabels == labels.end() && itSymbols == symbols.end())	
 			{
+				//save address of variable to symbols table
 				symbols.insert(pair<string, int>(addrInst, memoryAddr));
 
-				_itoa_s(memoryAddr, symb, 2); //int to bin
-				string str(symb);
-				string binStr = string(16 - str.length(), '0') + str;
+				convertToBinary(memoryAddr);
 
-				//add binary representation of addr to binary instructions table
-				binaryInstructions.push_back(binStr);
-
+				//increment memory addr for next variable
 				memoryAddr++;
 			}
-			//if address exists only in the lables table
+			//if address exists only in the labels table
 			else if (itLabels != labels.end() && itSymbols == symbols.end())	
 			{
+				//get linNum of label from labels table
+				int lineNum = itLabels->second;
 
+				convertToBinary(lineNum);
 			}
 			//if address exists only in symbols table
 			else if (itLabels == labels.end() && itSymbols != symbols.end())
 			{
+				//get mem addr from symbols table
 				int addr = itSymbols->second;
 
-				_itoa_s(addr, symb, 2); //int to bin
-				string str(symb);	
-				string binStr = string(16 - str.length(), '0') + str;	
-
-				//add binary representation of addr to binary instructions table
-				binaryInstructions.push_back(binStr);
+				convertToBinary(addr);
 			}
 			//if address exists in both tables, throw error
 			else	
@@ -185,9 +197,32 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	//test
+#pragma endregion Pass2
+
+#pragma region Pass3
+//Generate output file
+
+	outFile << "v2.0 raw" << endl;
+
 	for (string inst : binaryInstructions)
 	{
-		cout << inst << endl;
+		//convert to hex and write to outFile
+		outFile << b2hTbl.Convert16Bin2Hex(inst) << endl;
 	}
+	
+	outFile.close();
+
+#pragma endregion Pass3
+
+}
+
+void convertToBinary(int value)
+{
+	char symb[16] = { 0 };
+	_itoa_s(value, symb, 2); //int to bin
+	string str(symb);
+	string binStr = string(16 - str.length(), '0') + str;
+
+	//add binary representation of value to binary instructions table
+	binaryInstructions.push_back(binStr);
 }
