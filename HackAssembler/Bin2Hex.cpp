@@ -12,7 +12,7 @@ Bin2Hex::Bin2Hex()
 	bin2Hex["0100"] = '4';
 	bin2Hex["0101"] = '5';
 	bin2Hex["0110"] = '6';
-	bin2Hex["0211"] = '7';
+	bin2Hex["0111"] = '7';
 	bin2Hex["1000"] = '8';
 	bin2Hex["1001"] = '9';
 	bin2Hex["1010"] = 'A';

@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <chrono>
 #include <boost/algorithm/string.hpp>
 
 using namespace std;
@@ -20,6 +21,8 @@ map<string, int>::iterator itSymbols;
 
 int main(int argc, char* argv[])
 {
+	auto start = std::chrono::high_resolution_clock::now();
+
 	Destinations destTbl;
 	Computations compTbl;
 	Bin2Hex b2hTbl;
@@ -211,6 +214,53 @@ int main(int argc, char* argv[])
 	}
 	
 	outFile.close();
+
+	//generate debug list file
+	ofstream lstFile(outFileName + ".lst");
+	lstFile << "List File for: " << inFileName << endl;
+
+	lstFile << endl << endl << "**** Code ****" << endl;
+	for (int i = 0; i < binaryInstructions.size(); i++)
+	{
+		lstFile << binaryInstructions[i]
+			+ "\t" + b2hTbl.Convert16Bin2Hex(binaryInstructions[i])
+			+ "\t\t" + instructions[i] << endl;
+	}
+
+	lstFile << endl << endl << "**** Symbols ****" << endl;
+	if (symbols.size() != 0)
+	{
+		for (pair<string, int> symbol : symbols)
+		{
+			lstFile << symbol.second << "\t\t" << symbol.first << endl;
+		}
+	}
+	else
+	{
+		lstFile << "No Symbols Found" << endl;
+	}
+
+	lstFile << endl << endl << "**** Labels ****" << endl;
+	if (labels.size() != 0)
+	{
+		for (pair<string, int> label : labels)
+		{
+			lstFile << label.second << "\t\t" << label.first << endl;
+		}
+	}
+	else
+	{
+		lstFile << "No Labels Found" << endl;
+	}
+
+	lstFile.close();
+
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - start;
+
+	cout << "Assembly Complete\n\t" << "Look for files: " << "\n\t"
+		<< outFileName << "\n\t" << outFileName << ".lst" << endl;
+	cout << "Elapsed Time: " << elapsed.count() << endl;
 
 #pragma endregion Pass3
 
