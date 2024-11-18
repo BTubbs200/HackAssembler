@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void convertToBinary(int value);
+string convertToBinary(int value);
 vector<string> instructions, binaryInstructions;
 map<string, int> labels;
 map<string, int>::iterator itLabels;
@@ -159,43 +159,54 @@ int main(int argc, char* argv[])
 		{
 			//@Loop (loop target)
 			//@X (variable)
+			//@2 (address)
 
 			string addrInst = inst.substr(1, inst.length() - 1);
 
-			itLabels = labels.find(addrInst);
-			itSymbols = symbols.find(addrInst);
-
-			//if address exists in neither
-			if (itLabels == labels.end() && itSymbols == symbols.end())	
+			//if a number instead of variable name
+			if (isdigit(addrInst.at(0)))
 			{
-				//save address of variable to symbols table
-				symbols.insert(pair<string, int>(addrInst, memoryAddr));
+				int value = stoi(addrInst);	//convert to int
 
-				convertToBinary(memoryAddr);
-
-				//increment memory addr for next variable
-				memoryAddr++;
+				binaryInstructions.push_back(convertToBinary(value));
 			}
-			//if address exists only in the labels table
-			else if (itLabels != labels.end() && itSymbols == symbols.end())	
+			else
 			{
-				//get linNum of label from labels table
-				int lineNum = itLabels->second;
+				itLabels = labels.find(addrInst);
+				itSymbols = symbols.find(addrInst);
 
-				convertToBinary(lineNum);
-			}
-			//if address exists only in symbols table
-			else if (itLabels == labels.end() && itSymbols != symbols.end())
-			{
-				//get mem addr from symbols table
-				int addr = itSymbols->second;
+				//if address exists in neither
+				if (itLabels == labels.end() && itSymbols == symbols.end())
+				{
+					//save address of variable to symbols table
+					symbols.insert(pair<string, int>(addrInst, memoryAddr));
 
-				convertToBinary(addr);
-			}
-			//if address exists in both tables, throw error
-			else	
-			{
+					binaryInstructions.push_back(convertToBinary(memoryAddr));
 
+					//increment memory addr for next variable
+					memoryAddr++;
+				}
+				//if address exists only in the labels table
+				else if (itLabels != labels.end() && itSymbols == symbols.end())
+				{
+					//get linNum of label from labels table
+					int lineNum = itLabels->second;
+
+					binaryInstructions.push_back(convertToBinary(lineNum));
+				}
+				//if address exists only in symbols table
+				else if (itLabels == labels.end() && itSymbols != symbols.end())
+				{
+					//get mem addr from symbols table
+					int addr = itSymbols->second;
+
+					binaryInstructions.push_back(convertToBinary(addr));
+				}
+				//if address exists in both tables, throw error
+				else
+				{
+
+				}
 			}
 		}
 	}
@@ -266,13 +277,12 @@ int main(int argc, char* argv[])
 
 }
 
-void convertToBinary(int value)
+string convertToBinary(int value)
 {
 	char symb[16] = { 0 };
 	_itoa_s(value, symb, 2); //int to bin
 	string str(symb);
 	string binStr = string(16 - str.length(), '0') + str;
 
-	//add binary representation of value to binary instructions table
-	binaryInstructions.push_back(binStr);
+	return binStr;
 }
