@@ -14,3 +14,20 @@ public:
 	string find(string);
 };
 
+class IllegalJumps : exception
+{
+private:
+	string message;
+
+public:
+	IllegalJumps(const string& msg)
+	{
+		message = msg;
+	}
+
+	const char* what() const noexcept override
+	{
+		return message.c_str();
+	}
+};
+

@@ -1,4 +1,5 @@
 #include "Computations.h";
+#include <exception>
 
 Computations::Computations()
 {
@@ -47,6 +48,6 @@ string Computations::find(string str)
 	}
 	else
 	{
-		return "Computation code not found: " + str;
+		throw IllegalComps(str + " not found in Computations Table");
 	}
 }

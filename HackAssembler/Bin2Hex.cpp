@@ -35,7 +35,7 @@ char Bin2Hex::find(string str)
 	}
 	else
 	{
-		return 'X';
+		throw IllegalBin(str + " not found in Bin2Hex Table");
 	}
 }
 
