@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
 #pragma endregion Pass2
 
 #pragma region Pass3
-//Generate output file
+/// Generate output file ///
 
 	outFile << "v2.0 raw" << endl;
 
