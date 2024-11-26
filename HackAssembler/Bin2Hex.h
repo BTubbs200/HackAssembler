@@ -15,7 +15,7 @@ public:
 	string Convert16Bin2Hex(string);
 };
 
-class IllegalBin : exception
+class IllegalBin : public exception
 {
 private:
 	string message;

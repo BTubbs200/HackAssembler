@@ -14,7 +14,7 @@ public:
 	string find(string);
 };
 
-class IllegalJumps : exception
+class IllegalJumps : public exception
 {
 private:
 	string message;

@@ -277,8 +277,8 @@ int main(int argc, char* argv[])
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
 
-	std::cout << "Assembly Complete\n\t" << "Look for files: " << "\n\t"
-		<< outFileName << "\n\t" << outFileName << ".lst" << endl;
+	std::cout << "\nAssembly Complete\n\t" << "Look for files: " << "\n\t"
+		<< outFileName << "\n\t" << outFileName << ".lst\n" << endl;
 	std::cout << "Elapsed Time: " << elapsed.count() << endl;
 
 #pragma endregion Pass3

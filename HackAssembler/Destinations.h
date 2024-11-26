@@ -14,7 +14,7 @@ public:
 	string find(string);
 };
 
-class IllegalDestination : exception
+class IllegalDestination : public exception
 {
 private:
 	string message;

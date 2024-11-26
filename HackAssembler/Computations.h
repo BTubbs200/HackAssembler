@@ -14,13 +14,16 @@ public:
 	string find(string);
 };
 
-class IllegalComps : std::exception
+class IllegalComps : public exception
 {
 private:
 	string message;
 
 public:
-	explicit IllegalComps(const string& msg) : message(msg) {}
+	IllegalComps(const string& msg)
+	{
+		message = msg;
+	}
 
 	const char* what() const noexcept override
 	{

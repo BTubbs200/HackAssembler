@@ -48,7 +48,6 @@ string Computations::find(string str)
 	}
 	else
 	{
-		cerr << "Error: " << str;
 		throw IllegalComps(str + " not found in Computations Table");
 	}
 }

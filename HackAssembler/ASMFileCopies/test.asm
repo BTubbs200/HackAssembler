@@ -20,7 +20,7 @@ M=0
 @op2	//get op2 into D
 D=M
 @sum
-M=M+D	//add it to sum
+M=M-D	//add it to sum
 
 @Count	//get addr of loop count
 M=M-1	//decrement it
