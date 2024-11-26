@@ -14,3 +14,19 @@ public:
 	string find(string);
 };
 
+class IllegalDestination : public exception
+{
+private:
+	string message;
+
+public:
+	IllegalDestination(const string& msg)
+	{
+		message = msg;
+	}
+
+	const char* what() const noexcept override
+	{
+		return message.c_str();
+	}
+};

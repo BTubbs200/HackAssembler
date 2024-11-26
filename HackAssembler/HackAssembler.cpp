@@ -30,10 +30,10 @@ int main(int argc, char* argv[])
 	string inFileName, outFileName, inStr;
 	string comp, dest, jump, prefix;
 	int lineCount = 0, memoryAddr = 100;
-	
+
 	if (argc < 2) //user provided one or no file names
 	{
-		cout << "You must enter two parameters, input file and output file names." << endl;
+		std::cout << "You must enter two parameters, input file and output file names." << endl;
 	}
 	else
 	{
@@ -58,9 +58,9 @@ int main(int argc, char* argv[])
 	}
 
 #pragma region Pass1
-/// Clean up human input into acceptable Assembly instruction ///
+	/// Clean up human input into acceptable Assembly instruction ///
 
-	//iterate through & display all items in input file
+		//iterate through & display all items in input file
 	while (getline(inFile, inStr, '\n'))
 	{
 		boost::erase_all(inStr, " ");
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				cout << "Duplicate Label at Line: " + lineCount;
+				std::cout << "Duplicate Label at Line: " + lineCount;
 			}
 		}
 		//save label to instructions map
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 #pragma endregion Pass1
 
 #pragma region Pass2
-/// Process C and A instruction into binary ///
+	/// Process C and A instruction into binary ///
 
 	for (string inst : instructions)
 	{
@@ -152,7 +152,15 @@ int main(int argc, char* argv[])
 				prefix = "1000";
 			}
 
-			binaryInstructions.push_back(prefix + compTbl.find(comp) + destTbl.find(dest) + jmpTbl.find(jump));
+			try
+			{
+				binaryInstructions.push_back(prefix + compTbl.find(comp) + destTbl.find(dest) + jmpTbl.find(jump));
+			}
+			///FIXME///
+			catch (const exception& e)
+			{
+				std::cerr << e.what() << endl;
+			}
 		}
 		// A instruction
 		else
@@ -223,7 +231,7 @@ int main(int argc, char* argv[])
 		//convert to hex and write to outFile
 		outFile << b2hTbl.Convert16Bin2Hex(inst) << endl;
 	}
-	
+
 	outFile.close();
 
 	//generate debug list file
@@ -269,9 +277,9 @@ int main(int argc, char* argv[])
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
 
-	cout << "Assembly Complete\n\t" << "Look for files: " << "\n\t"
-		<< outFileName << "\n\t" << outFileName << ".lst" << endl;
-	cout << "Elapsed Time: " << elapsed.count() << endl;
+	std::cout << "\nAssembly Complete\n\t" << "Look for files: " << "\n\t"
+		<< outFileName << "\n\t" << outFileName << ".lst\n" << endl;
+	std::cout << "Elapsed Time: " << elapsed.count() << endl;
 
 #pragma endregion Pass3
 

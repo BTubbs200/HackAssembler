@@ -27,6 +27,6 @@ string Destinations::find(string str)
 	}
 	else
 	{
-		return "Destination code not found: " + str;
+		throw IllegalDestination(str + " not found in Destinations Table");
 	}
 }

@@ -27,6 +27,6 @@ string Jumps::find(string str)
 	}
 	else
 	{
-		return "Destination code not found: " + str;
+		throw IllegalJumps(str + " not found in Jumps Table");
 	}
 }
