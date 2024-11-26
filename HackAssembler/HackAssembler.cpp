@@ -156,6 +156,7 @@ int main(int argc, char* argv[])
 			{
 				binaryInstructions.push_back(prefix + compTbl.find(comp) + destTbl.find(dest) + jmpTbl.find(jump));
 			}
+			///FIXME///
 			catch (const exception& e)
 			{
 				std::cerr << e.what() << endl;
